@@ -1,13 +1,13 @@
 import { login } from "../api/auth";
-import * as Location from 'expo-location';
-import React, { useState, useEffect } from "react";
 import * as Notifications from 'expo-notifications';
+import React, { useState, useEffect } from "react";
 import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import { IconRegistry } from '@ui-kitten/components';
 import { useFocusEffect } from '@react-navigation/native';
 import { Input, Button, Text } from '@ui-kitten/components';
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { View, Alert, StyleSheet, Platform, Linking } from "react-native";
+import LocationPermissionModal from "../components/LocationPermission";
 
 type RootStackParamList = {
   Login: undefined;
@@ -22,45 +22,6 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [permissionsGranted, setPermissionsGranted] = useState(false);
   const [permissionError, setPermissionError] = useState<string | null>(null);
 
-  useEffect(() => {
-    checkPermissions();
-  }, []);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      checkPermissions();
-    }, [])
-  );
-
-  const checkPermissions = async () => {
-    const locationPermission = await Location.getBackgroundPermissionsAsync();
-    const notificationPermission = await Notifications.getPermissionsAsync();
-
-    if (
-      locationPermission.status === 'granted' &&
-      notificationPermission.status === 'granted'
-    ) {
-      setPermissionsGranted(true);
-    } else {
-      setPermissionError('Please allow location permission to proceed.');
-    }
-  };
-
-  const requestPermissions = async () => {
-    const locationPermission = await Location.requestBackgroundPermissionsAsync();
-    const notificationPermission = await Notifications.requestPermissionsAsync();
-
-    if (
-      locationPermission.status === 'granted' &&
-      notificationPermission.status === 'granted'
-    ) {
-      setPermissionsGranted(true);
-      setPermissionError(null);
-    } else {
-      setPermissionError('Please allow location permission to proceed.');
-    }
-  };
-
   const handleLogin = async () => {
     try {
       await login(email, password);
@@ -70,6 +31,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     }
   };
 
+  // Function to check if location permissions are granted
   const openAppSettings = () => {
     if (Platform.OS === 'ios') {
       Linking.openURL('app-settings:');
@@ -83,25 +45,13 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <>
       <IconRegistry icons={EvaIconsPack} />
-      <View
-        style={styles.container}
-      >
-        <Text
-          style={styles.title}
-        >
-          Login
-        </Text >
+      <View style={styles.container}>
+        <Text style={styles.title}>Login</Text>
 
-        {/* Show error if permissions are not granted */}
-        {
-          !permissionsGranted && permissionError && (
-            <Text
-              style={styles.errorText}
-            >
-              {permissionError}
-            </Text>
-          )
-        }
+        {/* Error Text */}
+        {permissionError && (
+          <Text style={styles.errorText}>{permissionError}</Text>
+        )}
 
         {/* Button to open Settings */}
         {
@@ -143,7 +93,10 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         >
           Login
         </Button>
-      </View >
+      </View>
+
+      {/* Location Permission Modal */}
+      <LocationPermissionModal />
     </>
   );
 };
