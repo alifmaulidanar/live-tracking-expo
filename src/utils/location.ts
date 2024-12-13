@@ -4,7 +4,7 @@ import * as TaskManager from 'expo-task-manager';
 import * as BackgroundFetch from 'expo-background-fetch';
 
 // Task names
-const LOCATION_TASK_NAME = 'background-location-task';
+const BACKGROUND_LOCATION_TASK = 'background-location-task';
 const BACKGROUND_FETCH_TASK = 'background-fetch';
 
 // Save location to backend
@@ -25,7 +25,7 @@ const sendLocationToBackend = async (latitude: number, longitude: number) => {
 };
 
 // Location task
-TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }: TaskManager.TaskManagerTaskBody) => {
+TaskManager.defineTask(BACKGROUND_LOCATION_TASK, async ({ data, error }: TaskManager.TaskManagerTaskBody) => {
   if (error) {
     console.error(error);
     return;
@@ -78,21 +78,23 @@ export const startLocationTracking = async (): Promise<void> => {
   }
 
   console.log('Starting location tracking');
-  await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-    accuracy: Location.Accuracy.High,
-    timeInterval: 60000, // Every 1 minutes
-    // timeInterval: 300000, // Every 5 minutes
-    distanceInterval: 1,
-    showsBackgroundLocationIndicator: true,
+  await Location.startLocationUpdatesAsync(BACKGROUND_LOCATION_TASK, {
+    accuracy: Location.Accuracy.High, // High accuracy
+    // timeInterval: 60000, // Every 1 minute
+    timeInterval: 300000, // Every 5 minutes
+    // timeInterval: 3000000, // Every 50 minutes
+    distanceInterval: 5, // Every 5 meters
+    showsBackgroundLocationIndicator: true, // Android only
     foregroundService: {
-      notificationTitle: 'Using your location',
-      notificationBody: 'To turn off, go back to the app and switch something off.',
+      notificationTitle: 'Using your location', // Android only
+      notificationBody: 'To turn off, go back to the app and switch something off.', // Android only
     },
   });
 
   await BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
-    minimumInterval: 60, // 1 minutes in seconds
-    // minimumInterval: 300, // 5 minutes in seconds
+    // minimumInterval: 60, // 1 minute in seconds
+    minimumInterval: 300, // 5 minutes in seconds
+    // minimumInterval: 3000, // 50 minutes in seconds
   });
 
   console.log('Location tracking started');
@@ -103,6 +105,6 @@ export const startLocationTracking = async (): Promise<void> => {
 // Stop location tracking
 export const stopLocationTracking = async (): Promise<void> => {
   console.log('Stopping location tracking');
-  await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
+  await Location.stopLocationUpdatesAsync(BACKGROUND_LOCATION_TASK);
   await BackgroundFetch.unregisterTaskAsync(BACKGROUND_FETCH_TASK);
 };
