@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "Trackify",
-    "slug": "trackify",
+    "name": "PastiTracking",
+    "slug": "pastitracking",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/trackify-logo.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/trackify-logo.png",
+      "image": "./assets/pasti-tracking-logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -43,10 +43,11 @@
         "foregroundImage": "./assets/trackify-logo.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.alifmaulidanar.trackify"
+      "package": "com.alifmaulidanar.pastitracking"
     },
     "web": {
-      "favicon": "./assets/trackify-logo.png"
+      "favicon": "./assets/trackify-logo.png",
+      "bundler": "metro"
     },
     "plugins": [
       "expo-font",
