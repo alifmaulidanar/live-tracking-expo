@@ -26,12 +26,6 @@
     },
     "android": {
       "permissions": [
-        // "ACCESS_FINE_LOCATION",
-        // "ACCESS_BACKGROUND_LOCATION",
-        // "ACCESS_COARSE_LOCATION",
-        // "FOREGROUND_SERVICE",
-        // "FOREGROUND_SERVICE_LOCATION",
-        // "INTERNET"
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_BACKGROUND_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",
@@ -58,7 +52,8 @@
           "isAndroidForegroundServiceEnabled": true
         }
       ],
-      "expo-background-fetch"
+      "expo-background-fetch",
+      "react-native-background-fetch"
     ]
   }
 }

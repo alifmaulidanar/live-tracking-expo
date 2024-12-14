@@ -1,11 +1,10 @@
 import supabase from './supabase';
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
-import * as BackgroundFetch from 'expo-background-fetch';
+import BackgroundFetch from 'react-native-background-fetch';
 
 // Task names
 const BACKGROUND_LOCATION_TASK = 'background-location-task';
-const BACKGROUND_FETCH_TASK = 'background-fetch';
 
 // Save location to backend
 const sendLocationToBackend = async (latitude: number, longitude: number) => {
@@ -13,6 +12,7 @@ const sendLocationToBackend = async (latitude: number, longitude: number) => {
   const { data: { user } } = await supabase.auth.getUser();
   const user_id = user?.id;
   if (!user) throw new Error('User not authenticated');
+  console.log('User ID:', user_id);
 
   const response = await fetch(`${apiBaseUrl}/save-location`, {
     method: 'POST',
@@ -24,10 +24,10 @@ const sendLocationToBackend = async (latitude: number, longitude: number) => {
   console.log('Location saved:', { user_id, latitude, longitude });
 };
 
-// Location task
+// Location task (This remains the same as before)
 TaskManager.defineTask(BACKGROUND_LOCATION_TASK, async ({ data, error }: TaskManager.TaskManagerTaskBody) => {
   if (error) {
-    console.error(error);
+    console.error('Error in background location task:', error);
     return;
   }
   if (data) {
@@ -37,19 +37,15 @@ TaskManager.defineTask(BACKGROUND_LOCATION_TASK, async ({ data, error }: TaskMan
       console.log('Location received:', { latitude, longitude });
       console.log('Save location attempt:', new Date().toLocaleString("id-ID", { timeZone: "Asia/Jakarta" }));
       await sendLocationToBackend(latitude, longitude);
-      console.log('Save location updated:', new Date().toLocaleString("id-ID", { timeZone: "Asia/Jakarta" }));
+      console.log('Location saved successfully:', { latitude, longitude });
     } catch (error) {
-      console.error('Failed to save location:', error);
+      console.error('Failed to save location in background location task:', error);
     }
   }
 });
 
-// Background fetch task
-TaskManager.defineTask(BACKGROUND_FETCH_TASK, async ({ data, error }: TaskManager.TaskManagerTaskBody) => {
-  if (error) {
-    console.error(error);
-    return BackgroundFetch.BackgroundFetchResult.Failed;
-  }
+// Background fetch task with react-native-background-fetch
+const onBackgroundFetchEvent = async (taskId: string) => {
   try {
     const { status } = await Location.requestBackgroundPermissionsAsync();
     if (status !== Location.PermissionStatus.GRANTED) {
@@ -61,14 +57,41 @@ TaskManager.defineTask(BACKGROUND_FETCH_TASK, async ({ data, error }: TaskManage
       const { latitude, longitude } = lastKnownPosition.coords;
       await sendLocationToBackend(latitude, longitude);
       console.log('Location saved in background fetch:', { latitude, longitude });
-      return BackgroundFetch.BackgroundFetchResult.NewData;
     }
-    return BackgroundFetch.BackgroundFetchResult.NoData;
+
+    // Finish the task and signal success
+    BackgroundFetch.finish(taskId);
+    console.log('Background fetch task completed');
   } catch (error) {
     console.error('Error in background fetch task:', error);
-    return BackgroundFetch.BackgroundFetchResult.Failed;
+    BackgroundFetch.finish(taskId);
   }
-});
+};
+
+// Register the background fetch task
+const registerBackgroundFetch = () => {
+  BackgroundFetch.configure({
+    minimumFetchInterval: 15, // Minimum interval (in minutes)
+    stopOnTerminate: false,   // Continue running even if the app is terminated
+    startOnBoot: true,        // Start on device reboot
+    enableHeadless: true,     // Enable headless mode
+    requiredNetworkType: BackgroundFetch.NETWORK_TYPE_ANY, // Allow any network type
+    requiresCharging: false,  // Do not require charging
+    requiresDeviceIdle: false, // Do not require device idle state
+    requiresBatteryNotLow: false, // Do not require battery to be full
+    requiresStorageNotLow: false, // Do not require sufficient storage
+  }, onBackgroundFetchEvent, onTimeout);
+
+  // Start background fetch immediately
+  BackgroundFetch.start();
+  console.log('Background fetch registered and started');
+};
+
+// onTimeout callback to handle when the background fetch time is about to expire
+const onTimeout = (taskId: string) => {
+  console.log('Background fetch timeout. Finishing task early.');
+  BackgroundFetch.finish(taskId);
+};
 
 // Start location tracking
 export const startLocationTracking = async (): Promise<void> => {
@@ -80,9 +103,8 @@ export const startLocationTracking = async (): Promise<void> => {
   console.log('Starting location tracking');
   await Location.startLocationUpdatesAsync(BACKGROUND_LOCATION_TASK, {
     accuracy: Location.Accuracy.High, // High accuracy
-    // timeInterval: 60000, // Every 1 minute
-    timeInterval: 300000, // Every 5 minutes
-    // timeInterval: 3000000, // Every 50 minutes
+    // timeInterval: 300000, // Every 5 minutes
+    timeInterval: 900000, // Every 15 minutes
     distanceInterval: 5, // Every 5 meters
     showsBackgroundLocationIndicator: true, // Android only
     foregroundService: {
@@ -91,11 +113,9 @@ export const startLocationTracking = async (): Promise<void> => {
     },
   });
 
-  await BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
-    // minimumInterval: 60, // 1 minute in seconds
-    minimumInterval: 300, // 5 minutes in seconds
-    // minimumInterval: 3000, // 50 minutes in seconds
-  });
+  // Register background fetch task after location tracking starts
+  console.log('Registering background fetch');
+  registerBackgroundFetch();
 
   console.log('Location tracking started');
   console.log('First location update:', await Location.getLastKnownPositionAsync());
@@ -106,5 +126,8 @@ export const startLocationTracking = async (): Promise<void> => {
 export const stopLocationTracking = async (): Promise<void> => {
   console.log('Stopping location tracking');
   await Location.stopLocationUpdatesAsync(BACKGROUND_LOCATION_TASK);
-  await BackgroundFetch.unregisterTaskAsync(BACKGROUND_FETCH_TASK);
+
+  // Unregister background fetch when stopping location tracking
+  console.log('Unregistering background fetch');
+  BackgroundFetch.stop();
 };
