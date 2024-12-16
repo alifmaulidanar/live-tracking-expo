@@ -9,7 +9,7 @@ import { View, Text, TextInput, Button, Alert, Platform, Linking, Image, Touchab
 
 type RootStackParamList = {
   Login: undefined;
-  Main: undefined;
+  NewMain: undefined;
 };
 
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;
@@ -32,7 +32,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     try {
       const user = await login(email, password);
       dispatch(setUser(user));
-      navigation.navigate("Main");
+      navigation.navigate("NewMain");
     } catch (error: any) {
       Alert.alert("Login failed", error.message);
     }
@@ -78,7 +78,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       </View>
 
       {/* Form Login (Tengah layar secara vertikal) */}
-      <View className="w-full max-w-md bg-white shadow-lg rounded-lg p-8 justify-start">
+      <View className="justify-start w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
         <Text className="text-center mb-5 text-2xl font-bold text-[#84439b]">Login</Text>
         {/* Input fields */}
         <TextInput
@@ -87,7 +87,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
           onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
-          className="bg-white border border-gray-300 rounded-md p-3 mb-4"
+          className="p-3 mb-4 bg-white border border-gray-300 rounded-md"
           editable={permissionsGranted}
         />
         <TextInput
@@ -95,7 +95,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
           value={password}
           onChangeText={setPassword}
           secureTextEntry
-          className="bg-white border border-gray-300 rounded-md p-3 mb-6"
+          className="p-3 mb-6 bg-white border border-gray-300 rounded-md"
           editable={permissionsGranted}
         />
         {/* Login Button */}
@@ -109,7 +109,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
       {/* Error Text */}
       {!permissionsGranted && (
-        <Text className="text-red-500 text-center mb-4">Permission Required</Text>
+        <Text className="mb-4 text-center text-red-500">Permission Required</Text>
       )}
 
       {/* Button to open Settings */}
@@ -118,7 +118,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
           onPress={openAppSettings}
           className="bg-[#5f5f5f] py-4 px-6 rounded-lg w-52 mx-auto"
         >
-          <Text className="text-center font-semibold text-white">Buka Pengaturan</Text>
+          <Text className="font-semibold text-center text-white">Buka Pengaturan</Text>
         </TouchableOpacity>
       )}
 
