@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "PastiTracking",
+    "name": "Pasti Tracking",
     "slug": "pastitracking",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/trackify-logo.png",
+    "icon": "./assets/mdm-logo.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -32,21 +32,26 @@
         // "FOREGROUND_SERVICE",
         // "FOREGROUND_SERVICE_LOCATION",
         // "INTERNET"
+        "android.permission.INTERNET",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_LOCATION",
+        "android.permission.ACCESS_NETWORK_STATE",
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_BACKGROUND_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.FOREGROUND_SERVICE",
-        "android.permission.FOREGROUND_SERVICE_LOCATION",
-        "android.permission.INTERNET"
+        // "android.permission.ACCESS_WIFI_STATE",
+        // "android.permission.CHANGE_WIFI_STATE",
+        // "android.permission.RECEIVE_BOOT_COMPLETED",
+        // "android.permission.SCHEDULE_EXACT_ALARM"
       ],
       "adaptiveIcon": {
-        "foregroundImage": "./assets/trackify-logo.png",
+        "foregroundImage": "./assets/mdm-logo.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.alifmaulidanar.pastitracking"
     },
     "web": {
-      "favicon": "./assets/trackify-logo.png",
+      "favicon": "./assets/mdm-logo.png",
       "bundler": "metro"
     },
     "plugins": [
@@ -58,7 +63,17 @@
           "isAndroidForegroundServiceEnabled": true
         }
       ],
-      "expo-background-fetch"
+      "expo-background-fetch",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/mdm-logo.png",
+          "color": "#ffffff",
+          "defaultChannel": "default",
+          "enableBackgroundRemoteNotifications": false,
+          "iosDisplayInForeground": true
+        }
+      ]
     ]
   }
 }
