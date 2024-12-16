@@ -1,11 +1,9 @@
 import supabase from './supabase';
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
-import * as BackgroundFetch from 'expo-background-fetch';
 
 // Task names
 const BACKGROUND_LOCATION_TASK = 'background-location-task';
-const BACKGROUND_FETCH_TASK = 'background-fetch';
 
 // Save location to backend
 const sendLocationToBackend = async (latitude: number, longitude: number) => {
@@ -14,6 +12,7 @@ const sendLocationToBackend = async (latitude: number, longitude: number) => {
   const user_id = user?.id;
   if (!user) throw new Error('User not authenticated');
 
+  console.log('Sending location data to backend');
   const response = await fetch(`${apiBaseUrl}/save-location`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -32,6 +31,7 @@ TaskManager.defineTask(BACKGROUND_LOCATION_TASK, async ({ data, error }: TaskMan
   }
   if (data) {
     try {
+      console.log('BACKGROUND_LOCATION_TASK');
       const { locations } = data as { locations: Location.LocationObject[] };
       const { latitude, longitude } = locations[0].coords;
       console.log('Location received:', { latitude, longitude });
@@ -41,32 +41,6 @@ TaskManager.defineTask(BACKGROUND_LOCATION_TASK, async ({ data, error }: TaskMan
     } catch (error) {
       console.error('Failed to save location:', error);
     }
-  }
-});
-
-// Background fetch task
-TaskManager.defineTask(BACKGROUND_FETCH_TASK, async ({ data, error }: TaskManager.TaskManagerTaskBody) => {
-  if (error) {
-    console.error(error);
-    return BackgroundFetch.BackgroundFetchResult.Failed;
-  }
-  try {
-    const { status } = await Location.requestBackgroundPermissionsAsync();
-    if (status !== Location.PermissionStatus.GRANTED) {
-      throw new Error('Permission to access location was denied');
-    }
-
-    const lastKnownPosition = await Location.getLastKnownPositionAsync();
-    if (lastKnownPosition) {
-      const { latitude, longitude } = lastKnownPosition.coords;
-      await sendLocationToBackend(latitude, longitude);
-      console.log('Location saved in background fetch:', { latitude, longitude });
-      return BackgroundFetch.BackgroundFetchResult.NewData;
-    }
-    return BackgroundFetch.BackgroundFetchResult.NoData;
-  } catch (error) {
-    console.error('Error in background fetch task:', error);
-    return BackgroundFetch.BackgroundFetchResult.Failed;
   }
 });
 
@@ -90,13 +64,7 @@ export const startLocationTracking = async (): Promise<void> => {
       notificationBody: 'To turn off, go back to the app and switch something off.', // Android only
     },
   });
-
-  await BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
-    // minimumInterval: 60, // 1 minute in seconds
-    minimumInterval: 300, // 5 minutes in seconds
-    // minimumInterval: 3000, // 50 minutes in seconds
-  });
-
+  console.log('BACKGROUND_LOCATION_TASK registered');
   console.log('Location tracking started');
   console.log('First location update:', await Location.getLastKnownPositionAsync());
   console.log('Time:', new Date().toLocaleString("id-ID", { timeZone: "Asia/Jakarta" }));
@@ -106,5 +74,4 @@ export const startLocationTracking = async (): Promise<void> => {
 export const stopLocationTracking = async (): Promise<void> => {
   console.log('Stopping location tracking');
   await Location.stopLocationUpdatesAsync(BACKGROUND_LOCATION_TASK);
-  await BackgroundFetch.unregisterTaskAsync(BACKGROUND_FETCH_TASK);
 };
