@@ -1,9 +1,9 @@
 import "./global.css"
 import React from 'react';
 import store from "./src/store/index";
-import Main from "./src/screens/Main";
 import { Provider } from 'react-redux';
 import { StatusBar } from "react-native";
+import Main from "./src/screens/MainScreen";
 import { initializeRadar } from "./src/utils/radar";
 import LoginScreen from './src/screens/LoginScreen';
 // import MainScreen from './src/screens/OldMainScreen';
