@@ -4,11 +4,11 @@
     "slug": "pastitracking",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/mdm-logo.png",
+    "icon": "./assets/logo/mdm-logo.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/pasti-tracking-logo.png",
+      "image": "./assets/logo/pasti-tracking-logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -26,12 +26,6 @@
     },
     "android": {
       "permissions": [
-        // "ACCESS_FINE_LOCATION",
-        // "ACCESS_BACKGROUND_LOCATION",
-        // "ACCESS_COARSE_LOCATION",
-        // "FOREGROUND_SERVICE",
-        // "FOREGROUND_SERVICE_LOCATION",
-        // "INTERNET"
         "android.permission.INTERNET",
         "android.permission.RECEIVE_BOOT_COMPLETED",
         "android.permission.FOREGROUND_SERVICE",
@@ -45,13 +39,13 @@
         // "android.permission.SCHEDULE_EXACT_ALARM"
       ],
       "adaptiveIcon": {
-        "foregroundImage": "./assets/mdm-logo.png",
+        "foregroundImage": "./assets/logo/mdm-logo.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.alifmaulidanar.pastitracking"
     },
     "web": {
-      "favicon": "./assets/mdm-logo.png",
+      "favicon": "./assets/logo/mdm-logo.png",
       "bundler": "metro"
     },
     "plugins": [
@@ -67,7 +61,7 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/mdm-logo.png",
+          "icon": "./assets/logo/mdm-logo.png",
           "color": "#ffffff",
           "defaultChannel": "default",
           "enableBackgroundRemoteNotifications": false,
@@ -96,7 +90,7 @@
           // string used in iOS NSMotionUsageDescription prompt, defaults to "This app uses the motion service to provide motion-based services."
           "iosNSMotionUsageDescription": "Your motion usage description."
         }
-      ],
+      ]
     ]
   }
 }

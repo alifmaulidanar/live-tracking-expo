@@ -9,7 +9,7 @@ import { View, Text, TextInput, Button, Alert, Platform, Linking, Image, Touchab
 
 type RootStackParamList = {
   Login: undefined;
-  NewMain: undefined;
+  Main: undefined;
 };
 
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;
@@ -32,7 +32,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     try {
       const user = await login(email, password);
       dispatch(setUser(user));
-      navigation.navigate("NewMain");
+      navigation.navigate("Main");
     } catch (error: any) {
       Alert.alert("Login failed", error.message);
     }
@@ -46,14 +46,12 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     const checkPermissions = async () => {
       const { status: foreground } = await Location.getForegroundPermissionsAsync();
       const { status: background } = await Location.getBackgroundPermissionsAsync();
-
       if (foreground === 'granted' && background === 'granted') {
         setPermissionsGranted(true);
       } else {
         setPermissionsGranted(false);
       }
     };
-
     checkPermissions();
   }, []);
 
@@ -62,7 +60,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       {/* Logo Perusahaan (Posisi di atas, tengah) */}
       <View className="items-center">
         <Image
-          source={require("../../assets/mdm-logo.png")}
+          source={require("../../assets/logo/mdm-logo.png")}
           style={{ width: 50, height: 50 }}
           resizeMode="contain"
         />
@@ -71,7 +69,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       {/* Logo Produk (Di antara logo perusahaan dan form login) */}
       <View className="items-center justify-center">
         <Image
-          source={require("../../assets/pasti-tracking-logo-new.png")}
+          source={require("../../assets/logo/pasti-tracking-logo-new.png")}
           style={{ width: "85%", height: 120 }}
           resizeMode="contain"
         />

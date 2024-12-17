@@ -1,5 +1,6 @@
 import * as Notifications from 'expo-notifications';
 
+// Setup notification channel
 export const setupNotificationChannel = async (): Promise<void> => {
   await Notifications.setNotificationChannelAsync('tracking', {
     name: 'Tracking',
@@ -9,6 +10,7 @@ export const setupNotificationChannel = async (): Promise<void> => {
   })
 }
 
+// Send tracking notification
 export const sendTrackingNotification = async (): Promise<void> => {
   await Notifications.scheduleNotificationAsync({
     content: {

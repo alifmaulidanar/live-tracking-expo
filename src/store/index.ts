@@ -1,5 +1,6 @@
 import { createSlice, configureStore } from '@reduxjs/toolkit';
 
+// User data type
 interface UserData {
   id: number;
   email: string;
@@ -8,6 +9,7 @@ interface UserData {
   phone: string;
 }
 
+// User slice
 const userSlice = createSlice({
   name: 'user',
   initialState: null as UserData | null,
@@ -17,15 +19,15 @@ const userSlice = createSlice({
   },
 });
 
+// Action creators
 export const { setUser, clearUser } = userSlice.actions;
 
-// Konfigurasi store Redux
+// Redux store configuration
 const store = configureStore({
-  reducer: {
-    user: userSlice.reducer,
-  },
+  reducer: { user: userSlice.reducer },
 });
 
+// Root state type
 export type RootState = ReturnType<typeof store.getState>;
 
 export default store;
