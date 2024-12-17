@@ -1,11 +1,10 @@
-import supabase from './supabase';
 import Radar from 'react-native-radar';
+import supabase from './supabase';
 import { getUserData } from '../api/auth';
 
-// Initialize Radar SDK
 const initializeRadar = (publishableKey: string) => {
+  // Initialize Radar SDK with your publishable key
   Radar.initialize(publishableKey);
-  console.log('Radar successfully initialized.');
 };
 
 // Request permissions for foreground and background location
@@ -20,41 +19,25 @@ const requestLocationPermissions = async () => {
 
 // Track location once (Foreground tracking)
 const trackLocationOnce = async () => {
-  Radar.trackOnce().then((result) => {
+  // Radar.trackOnce().then((result) => {
+  //   console.log('Location:', result.location);
+  //   console.log('Events:', result.events);
+  //   console.log('User Metadata:', result.user);
+  // }).catch((err) => {
+  //   console.error('Error tracking location:', err);
+  // });
+  try {
+    const result = await Radar.trackOnce();
     console.log('Location:', result.location);
     console.log('Events:', result.events);
     console.log('User Metadata:', result.user);
-  }).catch((err) => {
+  } catch (err) {
     console.error('Error tracking location:', err);
-  });
+  }
 };
 
 // Start background location tracking with Radar presets
-const startBackgroundTracking = async (preset: 'EFFICIENT' | 'RESPONSIVE' | 'CONTINUOUS') => {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('User not found');
-  const userId = user?.id as string;
-  const userData = await getUserData(userId);
-  if (!userData) throw new Error('User data not found');
-
-  // Initialize Radar with user ID, metadata, and description
-  Radar.setUserId(userId);
-  Radar.setMetadata(userData)
-  Radar.setDescription(`${userData.username} - ${userData.email} - ${userData.phone}`);
-
-  console.log('Radar initialized with user ID:', userId);
-  console.log('User metadata:', userData);
-  console.log('User description:', `${userData.username} - ${userData.email} - ${userData.phone}`);
-
-  // Request location permissions
-  await requestLocationPermissions();
-
-  // Start location tracking
-  trackLocationOnce(); // Track location once in foreground
-  console.log('Location tracked once in foreground:', new Date().toLocaleString("id-ID", { timeZone: "Asia/Jakarta" }));
-  // console log time in WIB
-
-  // Start background tracking
+const startBackgroundTracking = (preset: 'EFFICIENT' | 'RESPONSIVE' | 'CONTINUOUS') => {
   console.log('Starting background tracking with preset:', preset);
   switch (preset) {
     case 'EFFICIENT':
@@ -69,24 +52,6 @@ const startBackgroundTracking = async (preset: 'EFFICIENT' | 'RESPONSIVE' | 'CON
     default:
       console.error('Invalid preset for background tracking.');
   }
-
-  // Set foreground service options
-  Radar.setForegroundServiceOptions({
-    options: {
-      text: "Pekerjaan dimulai.",
-      title: "Lokasi diperbarui.",
-      updatesOnly: false,
-      importance: 2,
-      activity: 'com.alifmaulidanar.pastitracking'
-    }
-  });
-
-  // Check if background tracking is active
-  const isTracking = Radar.isTracking();
-  console.log('Background tracking status:', isTracking);
-
-  // Listen for location updates
-  listenForLocationUpdates();
 };
 
 // Stop background location tracking
@@ -106,8 +71,39 @@ const listenForLocationUpdates = () => {
   });
 };
 
+// Example usage of Radar SDK
+const setupRadarTracking = async () => {
+  const publishableKey = process.env.EXPO_PUBLIC_RADAR_PUBLISHABLE_KEY as string;  // Replace with your actual Radar publishable key
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('User not found');
+  const userId = user?.id as string;
+  const userData = await getUserData(userId);
+
+  // Initialize Radar SDK, set user ID, 
+  initializeRadar(publishableKey);
+  // Radar.setUserId(userId);
+  // Radar.setMetadata(userData)
+  // Radar.setDescription(`${userData.username} - ${userData.email} - ${userData.phone}`);
+
+  console.log('Radar initialized with publishable key:', publishableKey);
+  // console.log('Radar initialized with user ID:', userId);
+  // console.log('User metadata:', userData);
+  // console.log('User description:', `${userData.username} - ${userData.email} - ${userData.phone}`);
+
+  // Request location permissions
+  await requestLocationPermissions();
+
+  // Start location tracking
+  trackLocationOnce(); // Track location once in foreground
+  console.log('Location tracked once in foreground');
+  startBackgroundTracking('RESPONSIVE'); // Start background tracking with responsive preset
+  console.log('Background tracking started: RESPONSIVE');
+  listenForLocationUpdates(); // Listen for location updates
+};
+
 export {
   initializeRadar,
+  setupRadarTracking,
   requestLocationPermissions,
   trackLocationOnce,
   startBackgroundTracking,
