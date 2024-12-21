@@ -90,9 +90,12 @@ const LocationPermissionModal: React.FC<LocationPermissionModalProps> = ({ onPer
       {/* Foreground Status */}
       <View className="flex-row items-center mb-4">
         <Text className="mr-2 font-medium text-gray-700">Foreground:</Text>
-        <View
-          className={`flex-row items-center justify-center ${foregroundStatus === 'granted' ? 'bg-green-500' : 'bg-red-500'} 
-            text-white rounded-full py-1 px-3 shadow-md`}
+        <View className={
+          `flex-row items-center justify-center ${foregroundStatus === 'granted'
+            ? 'bg-green-500'
+            : 'bg-red-500'
+          } text-white rounded-full py-1 px-3 shadow-md`
+        }
         >
           <Text className="font-semibold text-white">{foregroundStatus}</Text>
         </View>
@@ -102,8 +105,12 @@ const LocationPermissionModal: React.FC<LocationPermissionModalProps> = ({ onPer
       <View className="flex-row items-center mb-4">
         <Text className="mr-2 font-medium text-gray-700">Background:</Text>
         <View
-          className={`flex-row items-center justify-center ${backgroundStatus === 'granted' ? 'bg-green-500' : 'bg-red-500'} 
-            text-white rounded-full py-1 px-3 shadow-md`}
+          className={
+            `flex-row items-center justify-center ${backgroundStatus === 'granted'
+              ? 'bg-green-500'
+              : 'bg-red-500'
+            } text-white rounded-full py-1 px-3 shadow-md`
+          }
         >
           <Text className="font-semibold text-white">{backgroundStatus}</Text>
         </View>

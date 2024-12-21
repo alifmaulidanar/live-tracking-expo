@@ -6,7 +6,6 @@ import { StatusBar } from "react-native";
 import Main from "./src/screens/MainScreen";
 import { initializeRadar } from "./src/utils/radar";
 import LoginScreen from './src/screens/LoginScreen';
-// import MainScreen from './src/screens/OldMainScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -31,7 +30,6 @@ export default function App() {
           <Stack.Navigator>
             <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
             <Stack.Screen name="Main" component={Main} options={{ headerShown: false }} />
-            {/* <Stack.Screen name="Main" component={MainScreen} options={{ headerShown: false }} /> */}
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaProvider>

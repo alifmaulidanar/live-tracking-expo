@@ -5,7 +5,7 @@ import LottieView from 'lottie-react-native';
 import React, { useState, useEffect } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { View, Alert, Text, Button, Modal, TouchableOpacity } from "react-native";
-import { startBackgroundTracking, stopBackgroundTracking } from "../utils/radar";
+import { cancelTrip, startBackgroundTracking, stopBackgroundTracking } from "../utils/radar";
 
 type RootStackParamList = {
   Login: undefined;
@@ -26,7 +26,7 @@ const MainScreen: React.FC<Props> = ({ navigation }) => {
   // Handle Start Tracking
   const handleStart = async () => {
     try {
-      startBackgroundTracking('RESPONSIVE');  // Start Radar location tracking
+      startBackgroundTracking('CONTINUOUS');  // Start Radar location tracking
       setTracking(true);
     } catch (error: any) {
       Alert.alert("Failed to start tracking", error.message);
@@ -36,6 +36,12 @@ const MainScreen: React.FC<Props> = ({ navigation }) => {
   // Handle Stop Tracking
   const handleStop = async () => {
     stopBackgroundTracking();  // Stop Radar location tracking
+    setTracking(false);
+  };
+
+  // Handle Cancel Tracking
+  const handleCancel = () => {
+    cancelTrip();  // Cancel Radar trip tracking
     setTracking(false);
   };
 
@@ -179,6 +185,19 @@ const MainScreen: React.FC<Props> = ({ navigation }) => {
             {tracking ? "Selesai" : "Mulai Bekerja"}
           </Text>
         </TouchableOpacity>
+
+        {/* Cancel Button */}
+        {tracking && (
+          <TouchableOpacity
+            onPress={handleCancel}
+            className="items-center w-full px-8 py-4 mt-4 bg-gray-500 rounded-full"
+            activeOpacity={0.7}
+          >
+            <Text className="text-xl font-bold text-white">
+              Batalkan
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* Logout Confirmation Modal */}
